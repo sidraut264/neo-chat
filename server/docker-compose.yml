@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: chatapp
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  server:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      DB_HOST: postgres
+      DB_NAME: chatapp
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: change_this_to_something_long_and_random
+      CLIENT_ORIGIN: http://localhost:5173
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
+  uploads:
